@@ -1,0 +1,3 @@
+--require ./ts-node.bootstrap.js
+--watch-extensions tsx,ts
+test/**/*.test.tsx
