@@ -4,6 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "respository": "https://github.com/AndreiBelokopytov/with-bem",
+  "bugs": {
+    "url": "https://github.com/AndreiBelokopytov/with-bem/issues"
+  },
   "scripts": {
     "build": "tsc -d",
     "test": "mocha --opts mocha.opts",
