@@ -25,32 +25,72 @@ class DummyComponent extends React.Component<IDummyComponentProps & IBemProps> {
         <div className={bem('title')}>
           Title
         </div>
+        <div className={bem('paragraph-1', 'yellow')}>
+          Some Text
+        </div>
+        <div className={bem('paragraph-2', ['green'])}>
+          Some Text
+        </div>
+        <div className={bem('paragraph-3', {blue: true})}>
+          Some Text
+        </div>
+        <div className={bem('paragraph-4', null, 'yellow')}>
+          Some Text
+        </div>
+        <div className={bem('paragraph-5', null, ['green'])}>
+          Some Text
+        </div>
+        <div className={bem('paragraph-6', null, {blue: true})}>
+          Some Text
+        </div>
       </div>
     );
   }
 }
 
 const DummyWrap = withBEM('dummy')(DummyComponent);
+const wrapper = Enzyme.shallow(<DummyWrap />);
 
 describe('withBEM', () => {
   it('returns react component', () => {
-    const wrapper = Enzyme.shallow(<DummyWrap />);
     expect(wrapper.find(DummyComponent)).to.have.length(1);
   });
 
   it('generates css class name prefixed with BEM block', () => {
-    const wrapper = Enzyme.shallow(<DummyWrap />);
     expect(wrapper.dive().find('.dummy')).to.have.lengthOf(1);
   });
 
   it('generates css class name with BEM element', () => {
-    const wrapper = Enzyme.shallow(<DummyWrap />);
     expect(wrapper.dive().find('div.dummy__title')).to.have.lengthOf(1);
   });
 
   it('generates css class name postfixed with BEM modifier', () => {
-    const wrapper = Enzyme.shallow(<DummyWrap red />);
+    const wrapper = Enzyme.shallow(<DummyWrap red={true} />);
     expect(wrapper.dive().find('div.dummy')).to.have.className('dummy--background-red');
+  });
+
+  it('allows to pass string as BEM modifier', () => {
+    expect(wrapper.dive().find('div.dummy__paragraph-1')).to.have.className('dummy__paragraph-1--yellow');
+  });
+
+  it('allows to pass array of strings as modifier', () => {
+    expect(wrapper.dive().find('div.dummy__paragraph-2')).to.have.className('dummy__paragraph-2--green');
+  });
+
+  it('allows to pass PredicateSet as modifier', () => {
+    expect(wrapper.dive().find('div.dummy__paragraph-3')).to.have.className('dummy__paragraph-3--blue');
+  });
+
+  it('allows to pass string as mixin', () => {
+    expect(wrapper.dive().find('div.dummy__paragraph-4')).to.have.className('yellow');
+  });
+
+  it('allows to pass array of strings as mixin', () => {
+    expect(wrapper.dive().find('div.dummy__paragraph-5')).to.have.className('green');
+  });
+
+  it('allows to pass PredicateSet as mixin', () => {
+    expect(wrapper.dive().find('div.dummy__paragraph-6')).to.have.className('blue');
   });
 
   it('passes arbitrary className prop down to wrapped component', () => {

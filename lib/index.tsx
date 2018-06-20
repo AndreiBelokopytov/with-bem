@@ -1,8 +1,19 @@
 import * as React from 'react';
 import * as BEMHelper from 'react-bem-helper';
+import { isArray } from 'util';
+
+interface PredicateSetNullable {
+    [key: string]: boolean | undefined | null | (() => boolean);
+}
+
+export type BemDecorator =  (
+    element?: string | null,
+    modifiers?: BEMHelper.WordSet | PredicateSetNullable | null,
+    extra?: BEMHelper.WordSet | PredicateSetNullable | null
+) => string;
 
 export interface IBemProps {
-    bem: Function;
+    bem: BemDecorator;
 }
 
 export interface IBemWrapperProps {
@@ -23,17 +34,37 @@ export default function withBEM<T>(
         modifierDelimiter
     });
 
-    const bem = (className: string) => (
-        element: string,
-        modifiers: any,
-        mixins: string[] = []
-    ) => bemHelper({
-        element,
-        modifiers,
-        extra: [className, ...mixins]
-    });
+    const bem = (className: string): BemDecorator => (
+        element?: string,
+        modifiers?: BEMHelper.WordSet,
+        extra: BEMHelper.WordSet = {}
+    ) => {
+        if (typeof extra === 'string') {
+            return bemHelper({
+                element,
+                modifiers,
+                extra: [className, extra]
+            });
+        } else if (isArray(extra)) {
+            return bemHelper({
+                element,
+                modifiers,
+                extra: [className, ...extra]
+            });
+        } else {
+            return bemHelper({
+                element,
+                modifiers,
+                extra: {
+                    ...extra as BEMHelper.PredicateSet,
+                    [className]: true
+                }
+            });
+        }
+    }
+
     const cache : {
-        bem?: Function;
+        bem?: BemDecorator;
         className?: string;
     } = {};
     return Component => {
